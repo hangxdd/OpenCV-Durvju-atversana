@@ -1,6 +1,11 @@
 # OpenCV Durvju atvēršana
 Elektromagnētisko durvju atvēršana izmantojot OpenCV un deepface sejas atpazīšanas tehnoloģiju, testa projekts.
 
+### Kā šo projektu es varu startēt?
+- Clone'o šo repositery savā datorā;
+- Ar `pip` komandu sava datora terminālī, vai savā izvēlētajā IDE ieinstalē OpenCV priekš Python un deepface - `pip install opencv-contrib-python`, `pip install opencv-python`, `pip install opencv-python deepface`;
+- Tagad droši vari startēt programmu un to testēt! _Bet iepriekš ar kameru uztaisi savas sejas bildi un ievieto to programmas direktorijā, lai programma tevi var atpazīt!_
+
 ### Kādēļ šis ir testa projekts?
 _Šis ir testa projekts, lai tīri izprastu, kā varētu strādāt reālais risinājums izmantojot nepieciešamo elektroniku un programmēšanas tehnoloģijas, 
 lai izveidotu sistēmu, kas ar sejas atpazīšanas tehnoloģiju atslēdz elektromagnētisko slēdzi durvīm._
