@@ -1,6 +1,8 @@
 import threading
 import cv2
 import time
+import boto3
+import numpy as np
 from deepface import DeepFace
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -13,16 +15,38 @@ counter = 0
 face_match = False
 end_flag = False
 
-reference_img=cv2.imread("reference.jpg")
+s3 = boto3.client('s3', region_name='eu-north-1')
+bucket_name = 'opencvimages'
+
+# Get the list of all files in the bucket
+response = s3.list_objects(Bucket=bucket_name)
+
+# Loop over all files and download them into memory
+reference_imgs = []
+for file in response['Contents']:
+    file_key = file['Key']
+
+    # Get the file from S3
+    obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+
+    # Read the file's content into a numpy array
+    arr = np.asarray(bytearray(obj['Body'].read()), dtype=np.uint8)
+
+    # Decode the numpy array as an image
+    reference_img = cv2.imdecode(arr, -1)
+
+    reference_imgs.append(reference_img)
 
 def check_face(frame):
     global face_match
-    try:
-        if DeepFace.verify(frame, reference_img.copy())['verified']:
-            face_match = True
-        else:
-            face_match = False
-    except ValueError:
+    for reference_img in reference_imgs:
+        try:
+            if DeepFace.verify(frame, reference_img.copy())['verified']:
+                face_match = True
+                break
+        except ValueError:
+            pass
+    if not face_match:
         face_match = False
 
 def end_program():
