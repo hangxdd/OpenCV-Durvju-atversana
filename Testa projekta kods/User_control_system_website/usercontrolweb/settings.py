@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Tailwind rewuired middleware
+    # Tailwind required middleware
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
@@ -128,6 +129,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'myapp/static'),
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -144,3 +149,5 @@ INTERNAL_IPS = [
 
 # Change this to your own npm.cmd path
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
+CSRF_COOKIE_DOMAIN = None
