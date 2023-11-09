@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load split %}
+
+{% block title %}
+<title>User control | Edit user</title>
+{% endblock %}
+
+{% block content %}
+<div class="static max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-3">
+    <div class="p-8">
+        <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Identifier: {{ user.identifier }}</div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mt-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Name</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="name" value="{{ user.name }}">
+            </div>
+            <div class="mt-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="surname">Surname</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="surname" value="{{ user.surname }}">
+            </div>
+            <div class="mt-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="image">Add image</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="file" name="image">
+            </div>
+            <button class="mt-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-[#25f65b] rounded shadow ripple hover:shadow-lg hover:bg-[#dcdcdc] hover:scale-105 duration-100 focus:outline-none" type="submit">
+                Save
+            </button>
+            <button class="mt-4 ml-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-[#f62525] rounded shadow ripple hover:shadow-lg hover:bg-[#dcdcdc] hover:scale-105 duration-100 focus:outline-none" type="submit" name="delete_images_button">
+                Delete Selected
+            </button>
+            {% for image in user.images %}
+                <div class="mt-4 flex items-center">
+                    <input type="checkbox" name="delete_images" value="{{ image.name }}">
+                    <img class="h-24 w-24 object-cover ml-4" src="{{ image.url }}" alt="User image">
+                    <p class="ml-4">{{ image.name }}</p>
+                </div>
+            {% endfor %}
+        </form>
+    </div>
+</div>
+{% endblock %}
