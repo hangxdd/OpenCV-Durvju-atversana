@@ -151,3 +151,5 @@ INTERNAL_IPS = [
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 CSRF_COOKIE_DOMAIN = None
+
+LOGOUT_REDIRECT_URL = 'login_view'

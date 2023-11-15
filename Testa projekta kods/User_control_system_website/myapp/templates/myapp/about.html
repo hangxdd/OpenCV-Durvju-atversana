@@ -1,9 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 <title>User control | About</title>
 {% endblock %}
 
 {% block content %}
-
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4">
+    <div class="md:flex">
+        <div class="p-8">
+            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">About user control system</div>
+            <p class="mt-2 text-gray-500">This system is created for a face recognition algorithm that uses OpenCV and deepface libraries
+                and reference images to recognize the user seen in the camera, to then accordingly output a text in the terminal.
+            </p>
+            <p class="mt-2 text-gray-500">
+                This system only allows access to a authorised Django Administrator to add new users, edit or delete existing ones.
+            </p>
+            <p class="mt-2 text-gray-500">
+                Also, there is the option to navigate to the system's Django admin panel and the Amazon's S3 file server where
+                the authorised users pictures are stored.
+            </p>
+            <p class="mt-2 mb-4 text-gray-500">
+                This system is made using Django, Tailwind and Amazon's library boto3.
+            </p>
+            <a href="https://github.com/hangxdd/OpenCV-Durvju-atversana" class="text-blue-500 italic">
+                Project's GitHub repository.
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -21,7 +21,7 @@
             </div>
             <div class="mt-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="image">Add image</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="file" name="image">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="file" name="image" multiple>
             </div>
             <button class="mt-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-[#25f65b] rounded shadow ripple hover:shadow-lg hover:bg-[#dcdcdc] hover:scale-105 duration-100 focus:outline-none" type="submit">
                 Save
@@ -33,7 +33,7 @@
                 <div class="mt-4 flex items-center">
                     <input type="checkbox" name="delete_images" value="{{ image.name }}">
                     <img class="h-24 w-24 object-cover ml-4" src="{{ image.url }}" alt="User image">
-                    <p class="ml-4">{{ image.name }}</p>
+                    <p class="ml-4">{{ image.name }} ({{ image.size|floatformat:2 }} MB)</p>
                 </div>
             {% endfor %}
         </form>

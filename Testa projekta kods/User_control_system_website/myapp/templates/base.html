@@ -30,6 +30,9 @@
           <a href="/users" class="text-xl hover:text-[#002D74] duration-500">HOME</a>
         </li>
         <li class="mx-4 my-6 md:my-0">
+          <a href="{% url 'add_user' %}" class="text-xl hover:text-[#002D74] duration-500">ADD USER</a>
+        </li>
+        <li class="mx-4 my-6 md:my-0">
           <a href="https://eu-north-1.console.aws.amazon.com/s3/buckets/opencvimages?region=eu-north-1&tab=objects#" class="text-xl hover:text-[#002D74] duration-500">S3</a>
         </li>
         <li class="mx-4 my-6 md:my-0">
@@ -39,9 +42,11 @@
           <a href="/about" class="text-xl hover:text-[#002D74] duration-500">ABOUT</a>
         </li>
   
-        <button class="bg-[#002D74] text-white uppercase px-6 py-2 mx-4 hover:bg-[#dcdcdc] hover:scale-105 duration-100 rounded ">
-          Logout
-        </button>
+        <a href="{% url 'logout' %}">
+          <button class="bg-[#002D74] text-white uppercase px-6 py-2 mx-4 hover:bg-[#dcdcdc] hover:scale-105 duration-100 rounded ">
+              Logout
+          </button>
+      </a>
   <h2 class=""></h2>
       </ul>
     </nav>
