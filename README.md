@@ -7,7 +7,7 @@ Elektromagnētisko durvju atvēršana izmantojot OpenCV un deepface sejas atpaz�
 - Aktivizē Virtual Environment;
 - Projekta direktorijā ar `pip` komandu terminālī, vai sevis izvēlētajā IDE terminālī ieinstalē OpenCV un deepface priekš Python, kā arī Django un Tailwind - `pip install opencv-contrib-python`, `pip install opencv-python`, `pip install opencv-python deepface`, `pip install django`, `python -m pip install django-tailwind`;
 - Tagad droši vari palaist `main.py` failu un testēt sejas atpazīšanas algoritmu!;
-- 
+ 
 _Bet iepriekš jābūt izveidotam jaunam lietotājam ar jūsu sejas bildēm lietotāju pārvaldības sistēmā, lai programma kamerā varētu jūsu seju atpazīt!_
 - Lai testētu lietotāju pārvaldības mājaslapu, atver `commands.md` failu kurā vari redzēt komandas, lai palaistu Django serveri un Tailwind, pēc to izpildīšanas droši vari atvērt mājaslapu!;
 
