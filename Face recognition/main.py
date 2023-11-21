@@ -18,13 +18,24 @@ end_flag = False
 s3 = boto3.client('s3', region_name='eu-north-1')
 bucket_name = 'opencvimages'
 
-# Get the list of all files in the bucket
-response = s3.list_objects(Bucket=bucket_name)
+def list_files(bucket_name, prefix='', visited=None):
+    if visited is None:
+        visited = set()
 
-# Loop over all files and download them into memory
+    if prefix in visited:
+        return
+    visited.add(prefix)
+
+    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+    for obj in response.get('Contents', []):
+        key = obj['Key']
+        if key.endswith('/'):  # This is a folder
+            yield from list_files(bucket_name, key, visited)  # Recursively list files in this folder
+        else:  # This is a file
+            yield key
+
 reference_imgs = []
-for file in response['Contents']:
-    file_key = file['Key']
+for file_key in list_files(bucket_name):
 
     # Get the file from S3
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
