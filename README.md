@@ -16,8 +16,7 @@ lai izveidotu sistēmu, kas ar sejas atpazīšanas tehnoloģiju atslēdz elektro
 
 ### Kāda ir šī projekta algoritma funkcionalitāte?
 _Pavisam vienkārši, startējot programmu atveras neliels kameras logs un tai ir dotas 10 sekundes laiks, lai atpazītu kamerā redzamo seju ar kādu no tām, kas ir pieejamas atsauces bildēs no Firebase failu servera,
-ja kamera atpazīst redzamo seju, tad uz ekrāna uz brīdi ir redzams zaļš teksts "MATCH!", programma aizveras un terminālī izvada tekstu "Face found! Door's opening.", ja tā 10 sekunžu laikā
-neatpazīst redzamo seju, tad programma aizveras un terminālī tiek izvadīts teksts "No matching face found..."._
+ja kamera atpazīst redzamo seju, tad uz ekrāna uz brīdi ir redzams zaļš teksts "MATCH!", programma aizveras un terminālī izvada tekstu "Face match! Welcome {user's name, surname}! Door's opening...", ja tā 10 sekunžu laikā neatpazīst redzamo seju, tad programma aizveras un terminālī tiek izvadīts teksts "No matching face found..."._
 
 ### Kāda ir lietotāju pārvaldības sistēmas funkcionalitāte?
 _Šī sistēma ļauj autorizētam Django administrātoram autorizēties tajā, lai pārvaldītu lietotājus kuriem ir piekļuve pie sejas atpazīšanas algoritma, lai tas tos atpazītu.
