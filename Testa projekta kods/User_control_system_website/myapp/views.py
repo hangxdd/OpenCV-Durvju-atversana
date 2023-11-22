@@ -4,7 +4,15 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User
-import boto3
+from firebase_admin import credentials, initialize_app, storage
+from datetime import timedelta
+import io
+
+# Initialize Firebase
+cred = credentials.Certificate(r"C:\Users\mrliv\Documents\Skolas Lietas\Prakse (4. kurss)\opencvimages-68d985d98e03.json")
+initialize_app(cred, {'storageBucket': 'opencvimages.appspot.com'})
+
+bucket = storage.bucket()
 
 # Create your views here.
 
@@ -23,16 +31,17 @@ def login_view(request):
         return render(request, 'myapp/login.html')
 
 def users_view(request):
-    s3 = boto3.client('s3')
     users = User.objects.all()
     for user in users:
-        response = s3.list_objects(Bucket='opencvimages', Prefix=f'{user.identifier}/')
-        user.images = ['https://s3.eu-north-1.amazonaws.com/opencvimages/' + obj['Key'] for obj in response.get('Contents', []) if obj['Key'].lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+        blobs = bucket.list_blobs(prefix=f'{user.identifier}/')
+        user.images = []
+        for blob in blobs:
+            if blob.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                url = blob.generate_signed_url(timedelta(minutes=15), method='GET')
+                user.images.append(url)
     return render(request, 'myapp/users.html', {'users': users})
 
 def edit_user_view(request, user_id):
-    s3_resource = boto3.resource('s3')
-    s3_client = boto3.client('s3')
     user = User.objects.get(id=user_id)
     if request.method == 'POST':
         user.name = request.POST['name']
@@ -41,28 +50,30 @@ def edit_user_view(request, user_id):
         if 'image' in request.FILES:
             images = request.FILES.getlist('image')
             for image in images:
-                s3_resource.Object('opencvimages', f'{user.identifier}/{image.name}').put(Body=image.read())
+                blob = bucket.blob(f'{user.identifier}/{image.name}')
+                blob.upload_from_file(image, content_type=image.content_type)
         if 'delete_images' in request.POST:
             for image_name in request.POST.getlist('delete_images'):
-                s3_resource.Object('opencvimages', f'{user.identifier}/{image_name}').delete()
+                blob = bucket.blob(f'{user.identifier}/{image_name}')
+                blob.delete()
         return redirect('edit_user', user_id=user.id)
     else:
-        response = s3_client.list_objects(Bucket='opencvimages', Prefix=f'{user.identifier}/')
-        user.images = [{'url': 'https://s3.eu-north-1.amazonaws.com/opencvimages/' + obj['Key'], 'name': obj['Key'].split('/')[-1], 'size': s3_resource.Object('opencvimages', obj['Key']).get()['ContentLength'] / 1024 / 1024} for obj in response.get('Contents', []) if obj['Key'] != f'{user.identifier}/']
+        blobs = bucket.list_blobs(prefix=f'{user.identifier}/')
+        user.images = [{'url': blob.generate_signed_url(timedelta(minutes=15), method='GET'), 'name': blob.name.split('/')[-1], 'size': blob.size / 1024 / 1024} for blob in blobs if blob.name != f'{user.identifier}/']
         return render(request, 'myapp/edit_user.html', {'user': user})
-    
+
 def delete_user_view(request, user_id):
-    s3 = boto3.resource('s3')
     user = User.objects.get(id=user_id)
-    for obj in s3.Bucket('opencvimages').objects.filter(Prefix=f'{user.identifier}/'):
-        obj.delete()
+    blobs = bucket.list_blobs(prefix=f'{user.identifier}/')
+    for blob in blobs:
+        blob.delete()
     user.delete()
     return redirect('users_view')
 
 def delete_image_view(request, user_id, image_name):
-    s3 = boto3.resource('s3')
     user = User.objects.get(id=user_id)
-    s3.Object('opencvimages', f'{user.identifier}/{image_name}').delete()
+    blob = bucket.blob(f'{user.identifier}/{image_name}')
+    blob.delete()
     return redirect('edit_user', user_id=user.id)
 
 def add_user_view(request):
@@ -79,10 +90,10 @@ def add_user_view(request):
         # Create a new user
         user = User.objects.create(identifier=identifier, name=name, surname=surname)
 
-        # Upload the pictures to S3
-        s3 = boto3.client('s3', region_name='eu-north-1')
+        # Upload the pictures to Firebase Storage
         for picture in pictures:
-            s3.upload_fileobj(picture, 'opencvimages', f'{identifier}/{picture.name}')
+            blob = bucket.blob(f'{identifier}/{picture.name}')
+            blob.upload_from_file(picture, content_type=picture.content_type)
 
         return redirect('users_view')
     else:

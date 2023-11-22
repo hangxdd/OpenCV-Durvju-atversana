@@ -1,9 +1,28 @@
 import threading
 import cv2
 import time
-import boto3
 import numpy as np
 from deepface import DeepFace
+from firebase_admin import credentials, initialize_app, storage
+import io
+
+# Import Django settings
+import os
+import sys
+import django
+
+# Add the User_control_system_website directory to the Python path
+sys.path.append('C:\\Users\\mrliv\\Documents\\Skolas Lietas\\Prakse (4. kurss)\\Elektromagnētisko durvju atvēršana ar sejas atpazīšanu projekts\\Testa projekta kods\\User_control_system_website')
+
+# Set the Django settings module
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'usercontrolweb.settings')
+
+# Set up Django
+django.setup()
+
+# Import the User model
+from myapp.models import User
+
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
@@ -15,50 +34,47 @@ counter = 0
 face_match = False
 end_flag = False
 
-s3 = boto3.client('s3', region_name='eu-north-1')
-bucket_name = 'opencvimages'
+# Initialize Firebase
+cred = credentials.Certificate(r"C:\Users\mrliv\Documents\Skolas Lietas\Prakse (4. kurss)\opencvimages-68d985d98e03.json")
+initialize_app(cred, {'storageBucket': 'opencvimages.appspot.com'})
 
-def list_files(bucket_name, prefix='', visited=None):
-    if visited is None:
-        visited = set()
+bucket = storage.bucket()
 
-    if prefix in visited:
-        return
-    visited.add(prefix)
-
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-    for obj in response.get('Contents', []):
-        key = obj['Key']
-        if key.endswith('/'):  # This is a folder
-            yield from list_files(bucket_name, key, visited)  # Recursively list files in this folder
-        else:  # This is a file
-            yield key
+def list_files():
+    # List all files in the Firebase Storage bucket
+    blobs = bucket.list_blobs()
+    return blobs
 
 reference_imgs = []
-for file_key in list_files(bucket_name):
+for blob in list_files():
+    # Only process blobs that are images (i.e., their names end with .png, .jpg, or .jpeg)
+    if blob.name.lower().endswith(('.png', '.jpg', '.jpeg')):
+        # Get the file from Firebase Storage
+        blob_bytes = blob.download_as_bytes()
 
-    # Get the file from S3
-    obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+        # Convert the bytes to a numpy array
+        nparr = np.frombuffer(blob_bytes, np.uint8)
 
-    # Read the file's content into a numpy array
-    arr = np.asarray(bytearray(obj['Body'].read()), dtype=np.uint8)
+        # Decode the numpy array as an image
+        reference_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Decode the numpy array as an image
-    reference_img = cv2.imdecode(arr, -1)
+        # Extract the user identifier from the file path
+        user_id = blob.name.split('/')[0]
 
-    reference_imgs.append(reference_img)
+        reference_imgs.append((reference_img, user_id))
 
 def check_face(frame):
     global face_match
-    for reference_img in reference_imgs:
+    for reference_img, user_id in reference_imgs:
         try:
             if DeepFace.verify(frame, reference_img.copy())['verified']:
                 face_match = True
-                break
+                return user_id
         except ValueError:
             pass
     if not face_match:
         face_match = False
+    return None
 
 def end_program():
     time.sleep(0.5)
@@ -98,7 +114,11 @@ while True:
         break
 
 if face_match:
-    print("Face found! Door's opening.")
+    user_id = check_face(frame)
+    user = User.objects.get(identifier=user_id)
+    print(f"Face match!")
+    print(f"Welcome {user.name} {user.surname}!")
+    print(f"Door's opening...")
 else:
     print("No matching face found...")
 
