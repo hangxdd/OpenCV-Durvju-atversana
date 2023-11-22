@@ -15,7 +15,7 @@ _Šis ir testa projekts, lai tīri izprastu, kā varētu strādāt reālais risi
 lai izveidotu sistēmu, kas ar sejas atpazīšanas tehnoloģiju atslēdz elektromagnētisko slēdzi durvīm un pārvaldītu sistēmā autorizētos lietotājus._
 
 ### Kāda ir šī projekta algoritma funkcionalitāte?
-_Pavisam vienkārši, startējot programmu atveras neliels kameras logs un tai ir dotas 10 sekundes laiks, lai atpazītu kamerā redzamo seju ar kādu no tām, kas ir pieejamas atsauces bildēs no Amazon S3 failu servera,
+_Pavisam vienkārši, startējot programmu atveras neliels kameras logs un tai ir dotas 10 sekundes laiks, lai atpazītu kamerā redzamo seju ar kādu no tām, kas ir pieejamas atsauces bildēs no Firebase failu servera,
 ja kamera atpazīst redzamo seju, tad uz ekrāna uz brīdi ir redzams zaļš teksts "MATCH!", programma aizveras un terminālī izvada tekstu "Face found! Door's opening.", ja tā 10 sekunžu laikā
 neatpazīst redzamo seju, tad programma aizveras un terminālī tiek izvadīts teksts "No matching face found..."._
 
@@ -24,9 +24,9 @@ _Šī sistēma ļauj autorizētam Django administrātoram autorizēties tajā, l
 Administrators var pievienot jaunus lietotājus, sniedzot tam katram savu unikālo identifikātoru, vārdu, uzvārdu un pievienot tā bildes, kā arī dzēst un rediģēt esošos lietotājus, mainot to vārdus, uzvārdus un bildes.
 
 ### Izmantotais šajā projektā
-_No programmēšanas tehnoloģijas - Visual Studio Code, Python, virtuālā vide, Django, Tailwind, OpenCV, deepface un Amazon boto3 bibliotēkas, Amazon S3 failu serveris.
+_No programmēšanas tehnoloģijas - Visual Studio Code, Python, virtuālā vide, Django, Tailwind, OpenCV, deepface un Firebase bibliotēkas, Firebase failu serveris.
 No elektronikas - Iebūvētā datora kamera._
 
 ### Nepieciešamais reālajam risinājumam
 _Priekš reālā risinājuma plānā būtu izmantot sekojošo elektroniku - Arduino mikrokontrolieri ar kameru, barošanas bloku un elektromagnētisko slēdzi.
-Savukārt programmēšanas tehnoloģiju - Visual Studio Code, Arduino IDE, Python, virtuālo vidi, OpenCV, deepface un Amaazon boto3 bibliotēkas. <sub>**(Iespējams vel kautkas būtu nepieciešams...)**</sub>_
+Savukārt programmēšanas tehnoloģiju - Visual Studio Code, Arduino IDE, Python, virtuālo vidi, OpenCV, deepface un Firebase bibliotēkas. <sub>**(Iespējams vel kautkas būtu nepieciešams...)**</sub>_
