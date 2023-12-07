@@ -8,7 +8,9 @@ from .models import User
 from firebase_admin import credentials, initialize_app, storage
 from datetime import timedelta
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 import os
+import base64
 
 # Initialize Firebase
 cred = credentials.Certificate(r"C:\Users\mrliv\Documents\Skolas Lietas\Prakse (4. kurss)\opencvimages-68d985d98e03.json")
@@ -122,20 +124,29 @@ def add_user_view(request):
         identifier = request.POST['identifier']
         name = request.POST['name']
         surname = request.POST['surname']
-        pictures = request.FILES.getlist('image')
-
         # Check if a user with the same identifier already exists
         if User.objects.filter(identifier=identifier).exists():
-            return render(request, 'myapp/add_user.html', {'error': 'A user with this identifier already exists.'})
-
+            return redirect('add_user')
         # Create a new user
         user = User.objects.create(identifier=identifier, name=name, surname=surname)
-
-        # Upload the pictures to Firebase Storage
-        for picture in pictures:
-            blob = bucket.blob(f'{identifier}/{picture.name}')
-            blob.upload_from_file(picture, content_type=picture.content_type)
-
+        # If new images are uploaded, save them to Firebase Storage
+        if 'image' in request.FILES:
+            images = request.FILES.getlist('image')
+            for image in images:
+                blob = bucket.blob(f'{identifier}/{image.name}')
+                blob.upload_from_file(image, content_type=image.content_type)
+        # If captured images are uploaded, save them to Firebase Storage
+        for key in request.POST.keys():
+            if key.startswith('captured_image'):
+                dataUrl = request.POST[key]
+                # Convert the data URL to a bytes object
+                header, data = dataUrl.split(',', 1)
+                data = base64.b64decode(data)
+                # Create a ContentFile object from the bytes object
+                image = ContentFile(data, name=f'{identifier}/{key}.png')
+                # Upload the image to Firebase Storage
+                blob = bucket.blob(f'{identifier}/{key}.png')
+                blob.upload_from_file(image, content_type='image/png')
         # Redirect to users view
         return redirect('users_view')
     # Handle GET request
